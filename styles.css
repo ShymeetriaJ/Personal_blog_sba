@@ -1,3 +1,7 @@
+:root {
+    --valid-color: #0b6d0b;
+    --error-color: #c00404;
+}
 body {
     font-family: Arial, sans-serif;
     background-color: #f4f4f4;
@@ -24,4 +28,33 @@ button[type="submit"] {
     border-radius: 4px;
     cursor: pointer;
     font-size: 16px;    
+}
+.blog-group-new {
+  margin-bottom: 15px;
+}
+ 
+.blog-group-new {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: bold;
+}
+.blog-group-new input[type="text"] {
+width: calc(100% - 22px); /* Account for padding and border */
+padding: 10px;
+border: 1px solid #ddd;
+border-radius: 4px;
+box-sizing: border-box;
+}
+
+.blog-group-new.valid input {
+    border-color: var(--valid-color);
+}
+.blog-group-new.error input {
+    border-color: var(--error-color);
+}
+.blog-group-new span {
+    color: var(--error-color);
+}
+button[type="submit"]:hover {
+    background-color: #2980b9;
 }
