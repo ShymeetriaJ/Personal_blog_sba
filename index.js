@@ -56,6 +56,18 @@ editBtn.className = 'edit-btn';
 editBtn.textContent = 'Edit'
 recents.appendChild(editBtn);
 
+//creating the delete post button
+const deleteBtn = document.createElement('button');
+deleteBtn.type = 'button';
+deleteBtn.className = 'delete-btn';
+deleteBtn.textContent = 'Delete';
+recents.appendChild(deleteBtn);
+
+li.appendChild(recents);
+
+//event listener for button and conditional statements
+
+
 
 
 
