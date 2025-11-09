@@ -35,9 +35,33 @@ function postBlog(title, content) {
 
 // calling the title of the post
 const blogTitle = document.createElement('blogTitle');
-blo
+blogTitle.className = 'post-title';
+blogTitle.textContent = title;
+li.appendChild(blogTitle);
+
+// calling the content area of the post
+const contentArea = document.createElement('contentArea');
+contentArea.className = 'post-content';
+contentArea.textContent = 'content'
+li.appendChild(contentArea);
+
+//creating the container for the recent posts
+const recents = document.createElement('div');
+recents.className = 'post-recents';
+
+//creating the edit button
+const editBtn = document.createElement('button');
+editBtn.type = 'button';
+editBtn.className = 'edit-btn';
+editBtn.textContent = 'Edit'
+recents.appendChild(editBtn);
+
+
+
+
 
 }
+
 
 
 
