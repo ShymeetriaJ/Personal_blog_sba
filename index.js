@@ -66,6 +66,23 @@ recents.appendChild(deleteBtn);
 li.appendChild(recents);
 
 //event listener for button and conditional statements
+editBtn.addEventListener('click', () => {
+    if (editBtn.textContent === 'Edit') {
+        const titleEdit = document.createElement('input');
+        titleEdit.type = 'type';
+        titleEdit.className = 'title-edit';
+        titleEdit.value = blogTitle.textContent;
+
+        const contentEdit = document.createElement('textarea');
+        contentEdit.className = 'content-edit';
+        contentEdit.rows = 6;
+        contentEdit.value = contentArea.textContent;
+
+        li.replaceChild(titleEdit, blogTitle);
+        li.replaceChild(contentEdit, contentArea);
+
+    }
+})
 
 
 
