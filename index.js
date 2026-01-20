@@ -1,96 +1,194 @@
+let blogPosts = [];
+
+function loadPostsFromStorage() {
+    const savedPosts = localStorage.getItem('blogPosts');
+    if (savedPosts) {
+        blogPosts = JSON.parse(savedPosts);
+    }
+}
+
+function savePostsToStorage() {
+    localStorage.setItem('blogPosts', JSON.stringify(blogPosts));
+}
+
 const form = document.getElementById('blogform');
 const titleInput = document.getElementById('newpost-title');
 const textArea = document.getElementById('blogtext');
 const postBtn = document.getElementById('postbtn');
-
-//Declaration for title span 
 const titleError = document.getElementById('titleError');
-
-//Declaration for blog text span
 const textError = document.getElementById('blogtextError');
-
-//Declaration for completed blogs
-const postsList = document.getElementById('completedBlogs')
+const postsList = document.getElementById('completedBlogs');
 
 
-//Functions to showErrors
 function showError(input, message) {
     const formGroup = input.parentElement;
-    formGroup.classList.add('blog-group-new error');
+    formGroup.classList.add('error');
     const span = formGroup.querySelector('span');
     span.innerText = message;
 }
-//clear error input
+
 function clearError(input) {
     const formGroup = input.parentElement;
-    formGroup.classList.remove('blog-group-new error');
+    formGroup.classList.remove('error');
     const span = formGroup.querySelector('span');
     span.innerText = '';
 }
-//function to make post go to list
-function postBlog(title, content) {
-    const li = document.createElement('li');
-    li.className = 'post-item';
-    return li;
-
-// calling the title of the post
-const blogTitle = document.createElement('blogTitle');
-blogTitle.className = 'post-title';
-blogTitle.textContent = title;
-li.appendChild(blogTitle);
-
-// calling the content area of the post
-const contentArea = document.createElement('contentArea');
-contentArea.className = 'post-content';
-contentArea.textContent = 'content'
-li.appendChild(contentArea);
-
-//creating the container for the recent posts
-const recents = document.createElement('div');
-recents.className = 'post-recents';
-
-//creating the edit button
-const editBtn = document.createElement('button');
-editBtn.type = 'button';
-editBtn.className = 'edit-btn';
-editBtn.textContent = 'Edit'
-recents.appendChild(editBtn);
-
-//creating the delete post button
-const deleteBtn = document.createElement('button');
-deleteBtn.type = 'button';
-deleteBtn.className = 'delete-btn';
-deleteBtn.textContent = 'Delete';
-recents.appendChild(deleteBtn);
-
-li.appendChild(recents);
-
-//event listener for button and conditional statements
-editBtn.addEventListener('click', () => {
-    if (editBtn.textContent === 'Edit') {
-        const titleEdit = document.createElement('input');
-        titleEdit.type = 'type';
-        titleEdit.className = 'title-edit';
-        titleEdit.value = blogTitle.textContent;
-
-        const contentEdit = document.createElement('textarea');
-        contentEdit.className = 'content-edit';
-        contentEdit.rows = 6;
-        contentEdit.value = contentArea.textContent;
-
-        li.replaceChild(titleEdit, blogTitle);
-        li.replaceChild(contentEdit, contentArea);
-
-    }
-})
 
 
-
-
-
-
+function createNewPost(title, content) {
+    const newPost = {
+        id: Date.now(),
+        title: title,
+        content: content,
+        timestamp: new Date().toLocaleString()
+    };
+    
+    blogPosts.push(newPost);
+    savePostsToStorage();
+    renderAllPosts();
 }
 
 
+function renderAllPosts() {
+    postsList.innerHTML = '';
+
+    blogPosts.forEach(function(post) {
+        const li = document.createElement('li');
+        li.className = 'post-item';
+        li.setAttribute('data-id', post.id);
+
+        const titleElement = document.createElement('h3');
+        titleElement.className = 'post-title';
+        titleElement.textContent = post.title;
+
+        const contentElement = document.createElement('p');
+        contentElement.className = 'post-content';
+        contentElement.textContent = post.content;
+
+        const timestampElement = document.createElement('small');
+        timestampElement.className = 'post-timestamp';
+        timestampElement.textContent = post.timestamp;
+
+        const buttonsDiv = document.createElement('div');
+        buttonsDiv.className = 'post-buttons';
+
+        const editBtn = document.createElement('button');
+        editBtn.type = 'button';
+        editBtn.className = 'edit-btn';
+        editBtn.textContent = 'Edit';
+
+        const deleteBtn = document.createElement('button');
+        deleteBtn.type = 'button';
+        deleteBtn.className = 'delete-btn';
+        deleteBtn.textContent = 'Delete';
+
+        buttonsDiv.appendChild(editBtn);
+        buttonsDiv.appendChild(deleteBtn);
+
+        li.appendChild(titleElement);
+        li.appendChild(contentElement);
+        li.appendChild(timestampElement);
+        li.appendChild(buttonsDiv);
+
+        postsList.appendChild(li);
+
+        editBtn.addEventListener('click', function() {
+            editPost(post.id);
+        });
 
 
+         deleteBtn.addEventListener('click', function() {
+            deletePost(post.id);
+        });
+    })
+}
+
+function deletePost(postId) {
+    const postIndex = blogPosts.findIndex(function(post) {
+        return post.id === postId;
+    });
+
+    if (postIndex !== -1) {
+        blogPosts.splice(postIndex, 1);
+        savePostsToStorage();
+        renderAllPosts();
+    }
+}
+
+function editPost(postId) {
+    const post = blogPosts.find(function(p) {
+        return p.id === postId;
+    });
+
+    if (post) {
+        titleInput.value = post.title;
+        textArea.value = post.content;
+
+        postBtn.textContent = 'Update';
+
+        postBtn.setAttribute('data-editing-id', postId);
+
+        form.scrollIntoView({ behavior: 'smooth' });
+    }
+}
+function updatePost(postId, newTitle, newContent) {
+  
+    const post = blogPosts.find(function(p) {
+        return p.id === postId;
+    });
+    
+    if (post) {
+        post.title = newTitle;
+        post.content = newContent;
+        post.timestamp = new Date().toLocaleString();
+        
+      
+        savePostsToStorage();
+        renderAllPosts();
+    }
+}
+
+
+form.addEventListener('submit', function(event) {
+    event.preventDefault();
+    
+    const title = titleInput.value.trim();
+    const content = textArea.value.trim();
+    
+    clearError(titleInput);
+    clearError(textArea);
+    
+    let isValid = true;
+    
+    if (title === '') {
+        showError(titleInput, 'Title is required');
+        isValid = false;
+    }
+    
+    if (content === '') {
+        showError(textArea, 'Content is required');
+        isValid = false;
+    }
+    
+    if (isValid) {
+        const editingId = postBtn.getAttribute('data-editing-id');
+        
+        if (editingId) {
+            
+            updatePost(parseInt(editingId), title, content); 
+          
+            postBtn.textContent = 'Post';
+            postBtn.removeAttribute('data-editing-id');
+        } else {
+          
+            createNewPost(title, content);
+        }
+        
+        titleInput.value = '';
+        textArea.value = '';
+    }
+});
+
+
+loadPostsFromStorage();
+renderAllPosts();
